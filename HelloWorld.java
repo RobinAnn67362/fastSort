@@ -45,6 +45,23 @@ public class HelloWorld {
 		}
 		System.out.println(a);
 
+		// test fastSortA
+		int[] sorted = fastSortA(sortA);
+		a = "";
+		for (int i = 0; i < sorted.length; i++) {
+			a += "+" + sorted[i];
+		}
+		System.out.println(a);
+
+		// test fastSortB
+		sortB = new int[] { 11, 5 };
+		FastSort fs = new HelloWorld().new FastSort(sortB);
+		fs.fastSort(0, sortB.length - 1);
+		a = "";
+		for (int i = 0; i < fs.getAr().length; i++) {
+			a += "+" + fs.getAr()[i];
+		}
+		System.out.println(a);
 	}
 
 	// 小于等于基准数放在左边，大于基准数放在右边
@@ -109,7 +126,102 @@ public class HelloWorld {
 
 	}
 
-	
+	// fastSort改进版，代码优化
+	private static int[] fastSortA(int[] ar) {
+		// 数组不为null并且元素大于1个
+		if (ar != null && ar.length > 1) {
+			int baseNum = ar[0];
+			int[] left = null, right = null;
+			int i = 0, j = ar.length - 1;
+			while (i != j) {
+				while (ar[j] > baseNum && i < j) {
+					j--;
+				}
+				while (ar[i] <= baseNum && i < j) {
+					i++;
+				}
+				int t = ar[i];
+				ar[i] = ar[j];
+				ar[j] = t;
+				if (i == j) {
+					if (i == 0) { // 相遇在头部，说明其它数都比基数大
+						left = null;
+						right = Arrays.copyOfRange(ar, 1, ar.length);
+					} else if (i == ar.length - 1) { // 相遇在尾部，说明其它数逗比基数小
+						left = Arrays.copyOfRange(ar, 1, ar.length);
+						right = null;
+					} else { // 相遇在中间
+						if (ar[i] <= baseNum) {
+							left = Arrays.copyOfRange(ar, 1, i + 1);
+							right = Arrays.copyOfRange(ar, i + 1, ar.length);
+						} else {
+							left = Arrays.copyOfRange(ar, 1, i);
+							right = Arrays.copyOfRange(ar, i, ar.length);
+						}
+
+					}
+
+				}
+			}
+			int[] base = { baseNum };
+			return concatAll(fastSort(left), base, fastSort(right));
+		} else {
+			return ar;
+		}
+
+	}
+
+	// fastSort改进版，空间优化（只在一个数组中操作）
+	class FastSort {
+		private int[] m_ar;
+
+		FastSort(int[] ar) {
+			m_ar = ar;
+		}
+
+		public int[] getAr() {
+			return m_ar;
+		}
+
+		public void fastSort(int from, int to) {
+			if (from < to) {
+				int baseNum = m_ar[from];
+				int[] left = null, right = null;
+				int i = from, j = to;
+				while (i != j) {
+					while (m_ar[j] > baseNum && i < j) {
+						j--;
+					}
+					while (m_ar[i] <= baseNum && i < j) {
+						i++;
+					}
+
+					if (i < j) {
+						int t = m_ar[i];
+						m_ar[i] = m_ar[j];
+						m_ar[j] = t;
+					}
+					/*
+					 * 不用判断基准数与相遇点的元素大小， 相遇点的元素只有两种情况，要么比基准数小，要么就是基准数
+					 * 原因就是比较先从右到左，j只有碰到比基准数小的才会停下，没有的话就会一直走到基准数点，与i回合 if(i==j) {
+					 * if(m_ar[i]<=baseNum) { int t = m_ar[i]; m_ar[i] = m_ar[from]; m_ar[from] = t;
+					 * fastSort(from,i-1); fastSort(i+1,to); }
+					 * 
+					 * }else { int t = m_ar[i]; m_ar[i] = m_ar[j]; m_ar[j] = t;
+					 * 
+					 * }
+					 */
+				}
+				// 基准数交换
+				int temp;
+				temp = m_ar[from];
+				m_ar[from] = m_ar[i];
+				m_ar[i] = temp;
+			}
+
+		}
+	}
+
 	public static int[] concatAll(int[]... rest) {
 		int totalLength = 0;
 		for (int[] array : rest) {
@@ -149,5 +261,8 @@ public class HelloWorld {
 		return result;
 	}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> branch-A
 }
