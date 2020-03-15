@@ -45,6 +45,14 @@ public class HelloWorld {
 		}
 		System.out.println(a);
 
+				// test fastSortA
+		int[] sorted = fastSortA(sortA);
+		a = "";
+		for (int i = 0; i < sorted.length; i++) {
+			a += "+" + sorted[i];
+		}
+		System.out.println(a);
+
 	}
 
 	// 小于等于基准数放在左边，大于基准数放在右边
@@ -109,6 +117,50 @@ public class HelloWorld {
 
 	}
 
+	// fastSort改进版，代码优化
+	private static int[] fastSortA(int[] ar) {
+		// 数组不为null并且元素大于1个
+		if (ar != null && ar.length > 1) {
+			int baseNum = ar[0];
+			int[] left = null, right = null;
+			int i = 0, j = ar.length - 1;
+			while (i != j) {
+				while (ar[j] > baseNum && i < j) {
+					j--;
+				}
+				while (ar[i] <= baseNum && i < j) {
+					i++;
+				}
+				int t = ar[i];
+				ar[i] = ar[j];
+				ar[j] = t;
+				if (i == j) {
+					if (i == 0) { // 相遇在头部，说明其它数都比基数大
+						left = null;
+						right = Arrays.copyOfRange(ar, 1, ar.length);
+					} else if (i == ar.length - 1) { // 相遇在尾部，说明其它数逗比基数小
+						left = Arrays.copyOfRange(ar, 1, ar.length);
+						right = null;
+					} else { // 相遇在中间
+						if (ar[i] <= baseNum) {
+							left = Arrays.copyOfRange(ar, 1, i + 1);
+							right = Arrays.copyOfRange(ar, i + 1, ar.length);
+						} else {
+							left = Arrays.copyOfRange(ar, 1, i);
+							right = Arrays.copyOfRange(ar, i, ar.length);
+						}
+
+					}
+
+				}
+			}
+			int[] base = { baseNum };
+			return concatAll(fastSort(left), base, fastSort(right));
+		} else {
+			return ar;
+		}
+
+	}
 	
 	public static int[] concatAll(int[]... rest) {
 		int totalLength = 0;
